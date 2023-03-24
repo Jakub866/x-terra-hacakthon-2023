@@ -14,6 +14,11 @@ Wyznaczanie ścieżki odbytwać się będzie za pomocą odnajdywania najbardziej
 * [ ] Algorytm usuwania węzłów nieprzekraczalnych.
 * [ ] front
 * [ ] back
+* [ ] Po uzysakniu lokalizacji od organizatorów dobranie odpowiednich wartości opisujących zajwiska na mapie SCL.
 
 
 <sub> Kolejność **TODO** całkowicie przypadkowa. </sub>
+
+
+**MOŻLIWE DODANIA:**
+* GIF pokazujący mapy wykorzystane przy wyznaczaniu trasy
