@@ -2,46 +2,48 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
+from enum import Enum
 
 grp = nx.Graph()
 height = 5
 width = 10
-def changeEdgeWeight(grp, n1, n2, data):
+
+# WATER = 0
+# VEGETATION = 1
+# DIRT = 2
+# MOUNTAINS = 3
+# ICE = 4
+
+SCLCostArray = np.matrix([[100, 100, 100, 90, 100],[100, 10, 40, 40, 100],[100, 40, 0, 80, 70],[90, 10, 80, 90, 100],[100, 100, 70, 100, 80]])
+# SCLCostArray = np.matrix([[80, 60, 0, 100, 100],[100, 10, 0, 90, 100],[80, 40, 0, 100, 80],[90, 40, 0, 90, 100],[100, 0, 0, 100, 80]])
+print(SCLCostArray)
+def getCostSCL(pos1, pos2):
+    return SCLCostArray[pos1, pos2]
+def changeEdgeWeight(grp, n1, n2, n1Terrain, n2Terrain):
     oldWeight = grp.get_edge_data(n1, n2)["weight"]
-    grp.add_edge(n1, n2, weight = oldWeight + data)
+    grp.add_edge(n1, n2, weight = oldWeight + getCostSCL(n1Terrain,n2Terrain))
 
 def updateWeights(grp, weigthArray):
     for i in range(0, height + 1):
         for j in range(0,width + 1):
             if i > 0:
-                changeEdgeWeight(grp, str(i) + str(j), str(i - 1) + str(j), abs(weigthArray[i][j] - weigthArray[i - 1][j]))
+                changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i - 1) + ' ' + str(j), weigthArray[i][j], weigthArray[i - 1][j])
             if j < width:
-                changeEdgeWeight(grp, str(i) + str(j), str(i) + str(j + 1), abs(weigthArray[i][j] - weigthArray[i][j + 1]))
-
-testArray = np.random.randint(10, size=(height + 1,width + 1))
-print(testArray)
-testArray2 = np.random.randint(10, size=(height + 1,width + 1))
-print(testArray2)
+                changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i) + ' ' + str(j + 1), weigthArray[i][j], weigthArray[i][j + 1])
 
 def generateGraph(grp):
     for i in range(0,height + 1):
         for j in range(0,width + 1):
-            grp.add_node(str(i) + str(j), layer = j)
+            grp.add_node(str(i) + ' ' + str(j), layer = j)
             if i > 0:
-                grp.add_edge(str(i) + str(j), str(i - 1) + str(j), weight = 0)
+                grp.add_edge(str(i) + ' ' + str(j), str(i - 1) + ' ' + str(j), weight = 0)
     #            if j < width:
     #                grp.add_edge(str(i) + str(j), str(i - 1) + str(j + 1), weight=random.randint(0, 101))
             if j < width:
-                grp.add_edge(str(i) + str(j), str(i) + str(j + 1), weight = 0)
+                grp.add_edge(str(i) + ' ' + str(j), str(i) + ' ' + str(j + 1), weight = 0)
     #            if i < height:
     #                grp.add_edge(str(i) + str(j), str(i + 1) + str(j + 1), weight=random.randint(0, 101))
     return grp
-tic = time.perf_counter()
-grp = generateGraph(grp)
-toc = time.perf_counter()
-updateWeights(grp, testArray)
-updateWeights(grp, testArray2)
-print(f"Graph generated in {toc - tic:0.4f} seconds")
 
 def printGraph(grp):
     elarge = [(u, v) for (u, v, d) in grp.edges(data=True) if d["weight"] > 50]
@@ -75,12 +77,22 @@ def dist(a, b):
     (x2, y2) = b
     return abs(x2-x1) + abs(y2-y1)
 
+testArray = np.random.randint(5, size=(height + 1,width + 1))
+print(testArray)
+testArray2 = np.random.randint(5, size=(height + 1,width + 1))
+print(testArray2)
+
+tic = time.perf_counter()
+grp = generateGraph(grp)
+toc = time.perf_counter()
+updateWeights(grp, testArray)
+updateWeights(grp, testArray2)
+print(f"Graph generated in {toc - tic:0.4f} seconds")
 
 #print(nx.astar_path(grp, '00', '99'))
 tic = time.perf_counter()
-print(nx.astar_path(grp, '11', '33', weight='weight'))
+print(nx.astar_path(grp, '1 1', '3 3', weight='weight'))
 toc = time.perf_counter()
-
 print(f"Path found in {toc - tic:0.4f} seconds")
 
 printGraph(grp)
