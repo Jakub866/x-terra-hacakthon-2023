@@ -4,40 +4,44 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 grp = nx.Graph()
-tic = time.perf_counter()
-
+height = 5
+width = 10
 def changeEdgeWeight(grp, n1, n2, data):
     oldWeight = grp.get_edge_data(n1, n2)["weight"]
     grp.add_edge(n1, n2, weight = oldWeight + data)
 
 def updateWeights(grp, weigthArray):
-    for i in range(0, width + 1):
-        for j in range(0,height + 1):
+    for i in range(0, height + 1):
+        for j in range(0,width + 1):
             if i > 0:
                 changeEdgeWeight(grp, str(i) + str(j), str(i - 1) + str(j), abs(weigthArray[i][j] - weigthArray[i - 1][j]))
-            if j < height:
+            if j < width:
                 changeEdgeWeight(grp, str(i) + str(j), str(i) + str(j + 1), abs(weigthArray[i][j] - weigthArray[i][j + 1]))
 
-testArray = np.random.randint(10, size=(6,6))
+testArray = np.random.randint(10, size=(height + 1,width + 1))
 print(testArray)
+testArray2 = np.random.randint(10, size=(height + 1,width + 1))
+print(testArray2)
 
-height = 5
-width = 5
-for i in range(0,width + 1):
-    for j in range(0,height + 1):
-        grp.add_node(str(i) + str(j), layer = i)
-        if i > 0:
-            grp.add_edge(str(i) + str(j), str(i - 1) + str(j), weight = 0)
-#            if j < width:
-#                grp.add_edge(str(i) + str(j), str(i - 1) + str(j + 1), weight=random.randint(0, 101))
-        if j < height:
-            grp.add_edge(str(i) + str(j), str(i) + str(j + 1), weight = 0)
-#            if i < height:
-#                grp.add_edge(str(i) + str(j), str(i + 1) + str(j + 1), weight=random.randint(0, 101))
+def generateGraph(grp):
+    for i in range(0,height + 1):
+        for j in range(0,width + 1):
+            grp.add_node(str(i) + str(j), layer = j)
+            if i > 0:
+                grp.add_edge(str(i) + str(j), str(i - 1) + str(j), weight = 0)
+    #            if j < width:
+    #                grp.add_edge(str(i) + str(j), str(i - 1) + str(j + 1), weight=random.randint(0, 101))
+            if j < width:
+                grp.add_edge(str(i) + str(j), str(i) + str(j + 1), weight = 0)
+    #            if i < height:
+    #                grp.add_edge(str(i) + str(j), str(i + 1) + str(j + 1), weight=random.randint(0, 101))
+    return grp
+tic = time.perf_counter()
+grp = generateGraph(grp)
 toc = time.perf_counter()
 updateWeights(grp, testArray)
+updateWeights(grp, testArray2)
 print(f"Graph generated in {toc - tic:0.4f} seconds")
-print(grp.number_of_edges())
 
 def printGraph(grp):
     elarge = [(u, v) for (u, v, d) in grp.edges(data=True) if d["weight"] > 50]
