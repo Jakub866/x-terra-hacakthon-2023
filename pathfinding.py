@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 grp = nx.Graph()
-height = 5
-width = 10
+height = 999
+width = 1475
 
 # WATER = 0
 # VEGETATION = 1
@@ -13,7 +13,25 @@ width = 10
 # MOUNTAINS = 3
 # ICE = 4
 
-SCLCostArray = np.matrix([[100, 100, 100, 90, 100],[100, 10, 40, 40, 100],[100, 40, 0, 80, 70],[90, 10, 80, 90, 100],[100, 100, 70, 100, 80]])
+SCL_WATER_CostArray = np.matrix(
+    [
+        [100, 0],
+        [0, 100],
+    ]
+)
+
+SCLCostArray = np.matrix(
+    [
+        [100, 10, 5, 90, 90, 0],
+        [100, 0, 5, 40, 90, 0],
+        [100, 10, 0, 40, 90, 0],
+        [100, 10, 5, 40, 90, 0],
+        [100, 10, 5, 40, 90, 0],
+        [100, 10, 5, 40, 90, 0]
+    ]
+)
+
+# SCLCostArray = np.matrix([[100, 100, 100, 90, 100],[100, 10, 40, 40, 100],[100, 40, 0, 80, 70],[90, 10, 80, 90, 100],[100, 100, 70, 100, 80]])
 # SCLCostArray = np.matrix([[80, 60, 0, 100, 100],[100, 10, 0, 90, 100],[80, 40, 0, 100, 80],[90, 40, 0, 90, 100],[100, 0, 0, 100, 80]])
 print(SCLCostArray)
 def getCost(pos1, pos2, filterType):
@@ -93,20 +111,27 @@ def getAStarPath(grp, pix1x, pix1y, pix2x, pix2y):
     print(f"Path found in {toc - tic:0.4f} seconds")
     return((pathPixPos, pathCostLis))
 
-testArray = np.random.randint(5, size=(height + 1,width + 1))
-print(testArray)
-testArray2 = np.random.randint(5, size=(height + 1,width + 1))
-print(testArray2)
+def getWeightArrayFromTxt(path):
+    f = open(path, "r")
+    weightArr = np.genfromtxt(path,dtype = int, delimiter=',')
+    print(weightArr)
+    return weightArr
+
+
+# testArray = np.random.randint(5, size=(height + 1,width + 1))
+# print(testArray)
+# testArray2 = np.random.randint(5, size=(height + 1,width + 1))
+# print(testArray2)
 
 tic = time.perf_counter()
 grp = generateGraph(grp)
 toc = time.perf_counter()
-updateWeights(grp, testArray, SCLCostArray)
-updateWeights(grp, testArray2, SCLCostArray)
+updateWeights(grp, getWeightArrayFromTxt("SCL.txt"), SCLCostArray)
+# updateWeights(grp, testArray2, SCLCostArray)
 print(f"Graph generated in {toc - tic:0.4f} seconds")
 
 #print(nx.astar_path(grp, '00', '99'))
 
-getAStarPath(grp, 1, 1, 4, 7)
+getAStarPath(grp, 26, 73, 705, 1023)
 
-printGraph(grp)
+#printGraph(grp)
