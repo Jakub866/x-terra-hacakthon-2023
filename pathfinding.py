@@ -12,28 +12,28 @@ width = 1475
 # DIRT = 2
 # MOUNTAINS = 3
 # ICE = 4
+# OTHER = 5
 
 SCL_WATER_CostArray = np.matrix(
     [
-        [100, 0],
-        [0, 100],
+        [100, 100],
+        [100, 0]
     ]
 )
 
 SCLCostArray = np.matrix(
     [
-        [100, 10, 5, 90, 90, 0],
-        [100, 0, 5, 40, 90, 0],
-        [100, 10, 0, 40, 90, 0],
-        [100, 10, 5, 40, 90, 0],
-        [100, 10, 5, 40, 90, 0],
+        [100, 100, 100, 100, 100, 100],
+        [100, 0, 10, 10, 10, 10],
+        [100, 10, 0, 5, 5, 5],
+        [100, 10, 5, 40, 40, 40],
+        [100, 10, 5, 40, 90, 90],
         [100, 10, 5, 40, 90, 0]
     ]
 )
 
 # SCLCostArray = np.matrix([[100, 100, 100, 90, 100],[100, 10, 40, 40, 100],[100, 40, 0, 80, 70],[90, 10, 80, 90, 100],[100, 100, 70, 100, 80]])
 # SCLCostArray = np.matrix([[80, 60, 0, 100, 100],[100, 10, 0, 90, 100],[80, 40, 0, 100, 80],[90, 40, 0, 90, 100],[100, 0, 0, 100, 80]])
-print(SCLCostArray)
 def getCost(pos1, pos2, filterType):
     return filterType[pos1, pos2]
 def changeEdgeWeight(grp, n1, n2, n1Terrain, n2Terrain, filterType):
@@ -97,16 +97,13 @@ def dist(a, b):
 def getAStarPath(grp, pix1x, pix1y, pix2x, pix2y):
     tic = time.perf_counter()
     pathList = nx.astar_path(grp, str(pix1x) + ' ' + str(pix1y), str(pix2x) + ' ' + str(pix2y), weight='weight')
-    print(pathList)
     pathPixPos = []
     for pix in pathList:
         temp = pix.split()
         pathPixPos.append((int(temp[0]), int(temp[1])))
-    print(pathPixPos)
     pathCostLis = []
     for n in range(0, len(pathList) - 1):
         pathCostLis.append(grp.get_edge_data(pathList[n], pathList[n + 1])["weight"])
-    print(pathCostLis)
     toc = time.perf_counter()
     print(f"Path found in {toc - tic:0.4f} seconds")
     return((pathPixPos, pathCostLis))
@@ -114,7 +111,6 @@ def getAStarPath(grp, pix1x, pix1y, pix2x, pix2y):
 def getWeightArrayFromTxt(path):
     f = open(path, "r")
     weightArr = np.genfromtxt(path,dtype = int, delimiter=',')
-    print(weightArr)
     return weightArr
 
 
@@ -127,11 +123,12 @@ tic = time.perf_counter()
 grp = generateGraph(grp)
 toc = time.perf_counter()
 updateWeights(grp, getWeightArrayFromTxt("SCL.txt"), SCLCostArray)
+updateWeights(grp, getWeightArrayFromTxt("SCL-WATER-ONLY.txt"), SCL_WATER_CostArray)
 # updateWeights(grp, testArray2, SCLCostArray)
 print(f"Graph generated in {toc - tic:0.4f} seconds")
 
 #print(nx.astar_path(grp, '00', '99'))
 
-getAStarPath(grp, 26, 73, 705, 1023)
+getAStarPath(grp, 26, 73, 800, 26)
 
 #printGraph(grp)
