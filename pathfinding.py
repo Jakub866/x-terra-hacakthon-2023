@@ -2,7 +2,6 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
-from enum import Enum
 
 grp = nx.Graph()
 height = 5
@@ -17,19 +16,19 @@ width = 10
 SCLCostArray = np.matrix([[100, 100, 100, 90, 100],[100, 10, 40, 40, 100],[100, 40, 0, 80, 70],[90, 10, 80, 90, 100],[100, 100, 70, 100, 80]])
 # SCLCostArray = np.matrix([[80, 60, 0, 100, 100],[100, 10, 0, 90, 100],[80, 40, 0, 100, 80],[90, 40, 0, 90, 100],[100, 0, 0, 100, 80]])
 print(SCLCostArray)
-def getCostSCL(pos1, pos2):
-    return SCLCostArray[pos1, pos2]
-def changeEdgeWeight(grp, n1, n2, n1Terrain, n2Terrain):
+def getCost(pos1, pos2, filterType):
+    return filterType[pos1, pos2]
+def changeEdgeWeight(grp, n1, n2, n1Terrain, n2Terrain, filterType):
     oldWeight = grp.get_edge_data(n1, n2)["weight"]
-    grp.add_edge(n1, n2, weight = oldWeight + getCostSCL(n1Terrain,n2Terrain))
+    grp.add_edge(n1, n2, weight = oldWeight + getCost(n1Terrain,n2Terrain, filterType))
 
-def updateWeights(grp, weigthArray):
+def updateWeights(grp, weigthArray, filterType):
     for i in range(0, height + 1):
         for j in range(0,width + 1):
             if i > 0:
-                changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i - 1) + ' ' + str(j), weigthArray[i][j], weigthArray[i - 1][j])
+                changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i - 1) + ' ' + str(j), weigthArray[i][j], weigthArray[i - 1][j], filterType)
             if j < width:
-                changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i) + ' ' + str(j + 1), weigthArray[i][j], weigthArray[i][j + 1])
+                changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i) + ' ' + str(j + 1), weigthArray[i][j], weigthArray[i][j + 1], filterType)
 
 def generateGraph(grp):
     for i in range(0,height + 1):
@@ -77,6 +76,23 @@ def dist(a, b):
     (x2, y2) = b
     return abs(x2-x1) + abs(y2-y1)
 
+def getAStarPath(grp, pix1x, pix1y, pix2x, pix2y):
+    tic = time.perf_counter()
+    pathList = nx.astar_path(grp, str(pix1x) + ' ' + str(pix1y), str(pix2x) + ' ' + str(pix2y), weight='weight')
+    print(pathList)
+    pathPixPos = []
+    for pix in pathList:
+        temp = pix.split()
+        pathPixPos.append((int(temp[0]), int(temp[1])))
+    print(pathPixPos)
+    pathCostLis = []
+    for n in range(0, len(pathList) - 1):
+        pathCostLis.append(grp.get_edge_data(pathList[n], pathList[n + 1])["weight"])
+    print(pathCostLis)
+    toc = time.perf_counter()
+    print(f"Path found in {toc - tic:0.4f} seconds")
+    return((pathPixPos, pathCostLis))
+
 testArray = np.random.randint(5, size=(height + 1,width + 1))
 print(testArray)
 testArray2 = np.random.randint(5, size=(height + 1,width + 1))
@@ -85,14 +101,12 @@ print(testArray2)
 tic = time.perf_counter()
 grp = generateGraph(grp)
 toc = time.perf_counter()
-updateWeights(grp, testArray)
-updateWeights(grp, testArray2)
+updateWeights(grp, testArray, SCLCostArray)
+updateWeights(grp, testArray2, SCLCostArray)
 print(f"Graph generated in {toc - tic:0.4f} seconds")
 
 #print(nx.astar_path(grp, '00', '99'))
-tic = time.perf_counter()
-print(nx.astar_path(grp, '1 1', '3 3', weight='weight'))
-toc = time.perf_counter()
-print(f"Path found in {toc - tic:0.4f} seconds")
+
+getAStarPath(grp, 1, 1, 4, 7)
 
 printGraph(grp)
