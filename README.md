@@ -14,18 +14,18 @@ X-TERRA use various Sentinel 2 layers system to find the most important data abo
 > SCL ONLY WATER \
 > MOISTURE INDEX \
 > VEGETATION INDEX\
-> NATURAL COLOR\
+> NATURAL COLOR
 
 Source services\
 > mundi
 > Openstreetmap\
 > EUDEM v1 - Copernicus Land Monitoring System\
-> Open weather map  (TO DO)\
+> Open weather map  (TO DO)
 
 Use cases of data\
 Providing stable and effective route between two or more points can be a quite challengous task, and to have a satysfiying output we had connected multiple layers of sattelite images to calculate a direct cost of crossing a particular coordinates. By establishing a multidimension cost table we have crated an array of masks each of which adds an appropriate weight to particular coordinate. For instance moisture layer provide information about condition of agricultural plain detected from SCL layer - it gave us a oppurtonity to determine if a soil is dry and passable or a theoretical convoy would stuck in mud.
 
-Example of used data weights\
+Example of used data weights
 
 | SCL layer  | Moisture Index | Geographic photo | Vegetation index |
 | ------------- | ------------- |------------- |------------- |
@@ -41,10 +41,9 @@ Tested region of Europe\
 ![](readme_files/testArea.gif)
 
 Layer used for region analysis\
-placeholder gif
+![](readme_files/layerTested.gif)
 
 Routing
 Route is plotet by using a R* type algorithm which determinate optimal route between two points A-B. 
 Example of road guided, based on the cost resulting from terrain conditions\
-placeholder gif
-placeholder gif
+![](readme_files/route1.gif)
