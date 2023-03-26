@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 grp = nx.Graph()
-height = 999
-width = 1475
+height = 10
+width = 10
 
 # WATER = 0
 # VEGETATION = 1
@@ -31,6 +31,14 @@ SCLCostArray = np.matrix(
         [100, 40, 30, 50, 90, 90, 40],
         [100, 40, 30, 40, 90, 50, 40],
         [100, 20, 15, 50, 40, 40, 15]
+    ]
+)
+
+HeightCostArray = np.matrix(
+    [
+        [0, 50, 100],
+        [50, 50, 100],
+        [100, 100, 100]
     ]
 )
 
@@ -111,6 +119,9 @@ def getAStarPath(grp, pix1x, pix1y, pix2x, pix2y):
     pathCostLis = []
     for n in range(0, len(pathList) - 1):
         pathCostLis.append(grp.get_edge_data(pathList[n], pathList[n + 1])["weight"])
+    # pathHeightList = []
+    # for n in range(0, len(pathList)):
+    #     pathHeightList.append()
     toc = time.perf_counter()
     print(f"Path found in {toc - tic:0.4f} seconds")
     return((pathPixPos, pathCostLis))
@@ -131,12 +142,12 @@ grp = generateGraph(grp)
 toc = time.perf_counter()
 updateWeights(grp, getWeightArrayFromTxt("SCL.txt"), SCLCostArray)
 updateWeights(grp, getWeightArrayFromTxt("SCL-WATER-ONLY.txt"), SCL_WATER_CostArray)
-updateWeights(grp, getWeightArrayFromTxt("elevation.txt"), calculateVertCost)
+updateWeights(grp, getWeightArrayFromTxt("HEIGHT_INDEX.txt"), HeightCostArray)
+#updateWeights(grp, getWeightArrayFromTxt("elevation.txt"), calculateVertCost)
 # updateWeights(grp, testArray2, SCLCostArray)
 print(f"Graph generated in {toc - tic:0.4f} seconds")
-
 #print(nx.astar_path(grp, '00', '99'))
 
-getAStarPath(grp, 26, 73, 800, 26)
+getAStarPath(grp, 1, 1, 3, 3)
 
-#printGraph(grp)
+printGraph(grp)
