@@ -40,4 +40,11 @@ Sentinels sattelite constelation revisit particular area in 5 days interval - wh
 Tested region of Europe\
 ![](readme_files/testArea.gif)
 
+Layer used for region analysis\
+placeholder gif
 
+Routing
+Route is plotet by using a R* type algorithm which determinate optimal route between two points A-B. 
+Example of road guided, based on the cost resulting from terrain conditions\
+placeholder gif
+placeholder gif
