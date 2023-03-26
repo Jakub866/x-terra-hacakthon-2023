@@ -16,7 +16,7 @@ X-TERRA use various Sentinel 2 layers system to find the most important data abo
 > VEGETATION INDEX\
 > NATURAL COLOR
 
-Source services\
+Source services
 > mundi
 > Openstreetmap\
 > EUDEM v1 - Copernicus Land Monitoring System\
@@ -46,4 +46,8 @@ Layer used for region analysis\
 Routing
 Route is plotet by using a R* type algorithm which determinate optimal route between two points A-B. 
 Example of road guided, based on the cost resulting from terrain conditions\
-![](readme_files/route1.gif)
+![](readme_files/route1.gif)\
+Hight mountain road\
+![endRoute](https://user-images.githubusercontent.com/100940274/227775106-c03be9b6-5d4f-4cb9-aecc-bf7654c9c53b.png)
+
+
