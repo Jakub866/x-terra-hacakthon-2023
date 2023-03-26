@@ -14,18 +14,31 @@ X-TERRA use various Sentinel 2 layers system to find the most important data abo
 > SCL ONLY WATER \
 > MOISTURE INDEX \
 > VEGETATION INDEX\
+> NATURAL COLOR\
 
-Open source services\
+Source services\
+> mundi
 > Openstreetmap\
 > EUDEM v1 - Copernicus Land Monitoring System\
-> FORCAST (TO DO)\
+> Open weather map  (TO DO)\
 
 Use cases of data\
-Providing stable and effective route between two or more points can be a quite challengous task, and to have a satysfiying output we had connected multiple layers of sattelite images to calculate a direct cost of crossing a particular coordinates. By establishing a multidimension cost table we have crated an array of masks each of which adds an appropriate weight to particular coordinate. For instance moisture layer provide information about condition of agricultural plain detected from SCL layer - it gave us a oppurtonity to determine if a soil is dry and passable or a theoretical conwoy would stuck in mud.
+Providing stable and effective route between two or more points can be a quite challengous task, and to have a satysfiying output we had connected multiple layers of sattelite images to calculate a direct cost of crossing a particular coordinates. By establishing a multidimension cost table we have crated an array of masks each of which adds an appropriate weight to particular coordinate. For instance moisture layer provide information about condition of agricultural plain detected from SCL layer - it gave us a oppurtonity to determine if a soil is dry and passable or a theoretical convoy would stuck in mud.
+
+Example of used data weights\
+
 | SCL layer  | Moisture Index | Geographic photo | Vegetation index |
 | ------------- | ------------- |------------- |------------- |
-| Content Cell  | Content Cell  ||x | z|
-| Content Cell  | Content Cell  |y | d|
+| Bare soil  | Drought  | Forests | Vegetation grow status |
+| Vegetation  | Water stress | Plains | Vegetation coverage |
+| Water | Hight canopy | Urbanisation | 
+| Snow/Ice|  | Water resorvoirs |
+| Clouds|||
+
+Sentinels sattelite constelation revisit particular area in 5 days interval - which mostly gave up to date information about geografic situation - and even with a support of other sources (weather forecast, prolonged data collection) can enable prediction of situation when data is unsufficent (Cloud issuses). (Determine future using past images, weather forecast and lower than satelite amplitude photos). Thank to that we can establish a reliable source of information about changing state of offroad terrain. 
+
+Tested region of Europe\
+
 
 Projekt ma składać się z algorytmu znajdywania najlepszej ścieżki z punku A do punktu B. Dzięki połączeniu heatmap zebranych z satleit projektu  Copernicus. Do znalezienia danych wykorzystywać będziemy portal Mundi. Sam projekt ma wyróżniać się prostotą w możlwiościach przyszłej rozbudowy. 
 
