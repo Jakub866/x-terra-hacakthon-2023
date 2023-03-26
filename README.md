@@ -19,7 +19,7 @@ Open source services\
 - EUDEM v1 - Copernicus Land Monitoring System
 - FORCAST (TO DO)
 Use cases of data\
-
+Providing stable and mostly effective route between two or 
 Projekt ma składać się z algorytmu znajdywania najlepszej ścieżki z punku A do punktu B. Dzięki połączeniu heatmap zebranych z satleit projektu  Copernicus. Do znalezienia danych wykorzystywać będziemy portal Mundi. Sam projekt ma wyróżniać się prostotą w możlwiościach przyszłej rozbudowy. 
 
 Wyznaczanie ścieżki odbytwać się będzie za pomocą odnajdywania najbardziej korzystnej ścieżki w grafie. Wartości kosztu będą modfikowane w zależnośći od wartości parametrów w heatmapach. Działanie zopytmalizujemy dzięki wykorzystaniu grafów o różnych gęstościach co pozwoli nam ograniczyć ilość przeszukiwanych węzłów.
