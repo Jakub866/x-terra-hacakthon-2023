@@ -34,10 +34,15 @@ SCLCostArray = np.matrix(
     ]
 )
 
+def calculateVertCost(pos1, pos2):
+    return pow(abs(pos1 - pos2),2)
+
 # SCLCostArray = np.matrix([[100, 100, 100, 90, 100],[100, 10, 40, 40, 100],[100, 40, 0, 80, 70],[90, 10, 80, 90, 100],[100, 100, 70, 100, 80]])
 # SCLCostArray = np.matrix([[80, 60, 0, 100, 100],[100, 10, 0, 90, 100],[80, 40, 0, 100, 80],[90, 40, 0, 90, 100],[100, 0, 0, 100, 80]])
 def getCost(pos1, pos2, filterType):
-    return filterType[pos1, pos2]
+    if not callable(filterType):
+        return filterType[pos1, pos2]
+    return filterType(pos1, pos2)
 def changeEdgeWeight(grp, n1, n2, n1Terrain, n2Terrain, filterType):
     oldWeight = grp.get_edge_data(n1, n2)["weight"]
     grp.add_edge(n1, n2, weight = oldWeight + getCost(n1Terrain,n2Terrain, filterType))
@@ -126,6 +131,7 @@ grp = generateGraph(grp)
 toc = time.perf_counter()
 updateWeights(grp, getWeightArrayFromTxt("SCL.txt"), SCLCostArray)
 updateWeights(grp, getWeightArrayFromTxt("SCL-WATER-ONLY.txt"), SCL_WATER_CostArray)
+updateWeights(grp, getWeightArrayFromTxt("elevation.txt"), calculateVertCost)
 # updateWeights(grp, testArray2, SCLCostArray)
 print(f"Graph generated in {toc - tic:0.4f} seconds")
 
