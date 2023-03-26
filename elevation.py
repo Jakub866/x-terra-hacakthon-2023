@@ -16,10 +16,16 @@ for filename in filenames:
         for pixel in _info:
             last_known_elevation = pixel.get("elevation", last_known_elevation) or last_known_elevation
             current_line.append(str(int(last_known_elevation)))
-            if len(current_line) == width:
-                plot.append(current_line)
-                last_known_elevation = current_line[0]
-                current_line = []
+        plot.append(current_line)
 
+plot2 = []
+for i in range(1000):
+    line = []
+    for j in range(1476):
+        line.append(plot[j][i])
+    plot2.append(line)
+
+print(len(plot2))
+print(len(plot2[0]))
 out = open("elevation.txt", "w")
-out.write("\n".join([", ".join(l) for l in plot]))
+out.write("\n".join([", ".join(l) for l in plot2]))
