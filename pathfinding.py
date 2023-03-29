@@ -2,10 +2,13 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
+from draw_func import my_draw_networkx_edge_labels as drawnxlabels
 
 grp = nx.Graph()
-height = 10
-width = 10
+dgrp = nx.DiGraph()
+
+height = 2
+width = 2
 
 # WATER = 0
 # VEGETATION = 1
@@ -42,6 +45,24 @@ HeightCostArray = np.matrix(
     ]
 )
 
+DirectedHeightCostArray = np.matrix(
+    [
+        [0, 10, 20],
+        [30, 40, 50],
+        [60, 7, 5]
+    ]
+)
+
+def removeNode(grp, pos1, pos2):
+    if grp.has_node(str(pos1) + ' ' + str(pos2)):
+        grp.remove_node(str(pos1) + ' ' + str(pos2))
+
+def applyExclusionZones(grp, exclusionArray):
+    for i in range(0, height + 1):
+        for j in range(0, width + 1):
+            if exclusionArray[i][j] == 1:
+                removeNode(grp, i, j)
+
 def calculateVertCost(pos1, pos2):
     return pow(abs(pos1 - pos2),2)
 
@@ -63,6 +84,18 @@ def updateWeights(grp, weigthArray, filterType):
             if j < width:
                 changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i) + ' ' + str(j + 1), weigthArray[i][j], weigthArray[i][j + 1], filterType)
 
+def updateDirectedWeights(grp, weigthArray, filterType):
+    for i in range(0, height + 1):
+        for j in range(0,width + 1):
+            if i > 0:
+                changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i - 1) + ' ' + str(j), weigthArray[i][j], weigthArray[i - 1][j], filterType)
+            if j < width:
+                changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i) + ' ' + str(j + 1), weigthArray[i][j], weigthArray[i][j + 1], filterType)
+            if j > 0:
+                changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i) + ' ' + str(j - 1), weigthArray[i][j], weigthArray[i][j - 1], filterType)
+            if i < height:
+                changeEdgeWeight(grp, str(i) + ' ' + str(j), str(i + 1) + ' ' + str(j), weigthArray[i][j], weigthArray[i + 1][j], filterType)
+
 def generateGraph(grp):
     for i in range(0,height + 1):
         for j in range(0,width + 1):
@@ -77,6 +110,41 @@ def generateGraph(grp):
     #                grp.add_edge(str(i) + str(j), str(i + 1) + str(j + 1), weight=random.randint(0, 101))
     return grp
 
+def generateDirectedGraph(grp):
+    for i in range(0,height + 1):
+        for j in range(0,width + 1):
+            grp.add_node(str(i) + ' ' + str(j), layer = j)
+            if i > 0:
+                grp.add_edge(str(i) + ' ' + str(j), str(i - 1) + ' ' + str(j), weight = 0)
+    #            if j < width:
+    #                grp.add_edge(str(i) + str(j), str(i - 1) + str(j + 1), weight=random.randint(0, 101))
+            if j < width:
+                grp.add_edge(str(i) + ' ' + str(j), str(i) + ' ' + str(j + 1), weight = 0)
+    #            if i < height:
+    #                grp.add_edge(str(i) + str(j), str(i + 1) + str(j + 1), weight=random.randint(0, 101))
+            if j > 0:
+                grp.add_edge(str(i) + ' ' + str(j), str(i) + ' ' + str(j - 1), weight = 0)
+            if i < height:
+                grp.add_edge(str(i) + ' ' + str(j), str(i + 1) + ' ' + str(j), weight = 0)
+    return grp
+
+
+def testDirectedDraw(grp):
+    pos = nx.multipartite_layout(grp, subset_key="layer")
+    fig, ax = plt.subplots()
+    nx.draw_networkx_nodes(grp, pos, ax=ax)
+    nx.draw_networkx_labels(grp, pos, ax=ax)
+    curved_edges = [edge for edge in grp.edges() if reversed(edge) in grp.edges()]
+    straight_edges = list(set(grp.edges()) - set(curved_edges))
+    nx.draw_networkx_edges(grp, pos, ax=ax, edgelist=straight_edges)
+    arc_rad = 0.25
+    nx.draw_networkx_edges(grp, pos, ax=ax, edgelist=curved_edges, connectionstyle=f'arc3, rad = {arc_rad}')
+    edge_weights = nx.get_edge_attributes(grp, 'weight')
+    curved_edge_labels = {edge: edge_weights[edge] for edge in curved_edges}
+    straight_edge_labels = {edge: edge_weights[edge] for edge in straight_edges}
+    drawnxlabels(grp, pos, ax=ax, edge_labels=curved_edge_labels, rotate=False, rad=arc_rad)
+    nx.draw_networkx_edge_labels(grp, pos, ax=ax, edge_labels=straight_edge_labels, rotate=False)
+    plt.show()
 def printGraph(grp):
     elarge = [(u, v) for (u, v, d) in grp.edges(data=True) if d["weight"] > 50]
     esmall = [(u, v) for (u, v, d) in grp.edges(data=True) if d["weight"] <= 50]
@@ -137,17 +205,24 @@ def getWeightArrayFromTxt(path):
 # testArray2 = np.random.randint(5, size=(height + 1,width + 1))
 # print(testArray2)
 
-tic = time.perf_counter()
-grp = generateGraph(grp)
-toc = time.perf_counter()
-updateWeights(grp, getWeightArrayFromTxt("SCL.txt"), SCLCostArray)
-updateWeights(grp, getWeightArrayFromTxt("SCL-WATER-ONLY.txt"), SCL_WATER_CostArray)
-updateWeights(grp, getWeightArrayFromTxt("HEIGHT_INDEX.txt"), HeightCostArray)
-#updateWeights(grp, getWeightArrayFromTxt("elevation.txt"), calculateVertCost)
-# updateWeights(grp, testArray2, SCLCostArray)
-print(f"Graph generated in {toc - tic:0.4f} seconds")
-#print(nx.astar_path(grp, '00', '99'))
+# tic = time.perf_counter()
+# grp = generateGraph(grp)
+# toc = time.perf_counter()
+# updateWeights(grp, getWeightArrayFromTxt("SCL.txt"), SCLCostArray)
+# updateWeights(grp, getWeightArrayFromTxt("SCL-WATER-ONLY.txt"), SCL_WATER_CostArray)
+# # updateWeights(grp, getWeightArrayFromTxt("elevation.txt"), calculateVertCost)
+# updateWeights(grp, getWeightArrayFromTxt("HEIGHT_INDEX.txt"), HeightCostArray)
+# applyExclusionZones(grp, getWeightArrayFromTxt("exclusion_test.txt"))
+# # updateWeights(grp, testArray2, SCLCostArray)
+# print(f"Graph generated in {toc - tic:0.4f} seconds")
+# #print(nx.astar_path(grp, '00', '99'))
+#
+# getAStarPath(grp, 0, 0, 4, 0)
+#
+# printGraph(grp)
 
-getAStarPath(grp, 1, 1, 3, 3)
-
-printGraph(grp)
+dgrp = generateDirectedGraph(dgrp)
+updateDirectedWeights(dgrp, getWeightArrayFromTxt("testWeight.txt"), DirectedHeightCostArray)
+testDirectedDraw(dgrp)
+print(getAStarPath(dgrp, 2, 1, 1, 0))
+#printGraph(dgrp)
