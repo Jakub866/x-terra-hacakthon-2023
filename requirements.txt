@@ -75,7 +75,7 @@ paramiko==2.6.0
 parso==0.8.3
 pexpect==4.6.0
 pickleshare==0.7.5
-Pillow==9.4.0
+Pillow==10.2.0
 prompt-toolkit==3.0.38
 protobuf==3.6.1
 pure-eval==0.2.2
